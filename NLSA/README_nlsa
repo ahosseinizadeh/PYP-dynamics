@@ -1,0 +1,94 @@
+README file for running the NLSA codes
+Ourmazd Lab, 2022
+###########################################################################
+
+(1) run "run_PYP_femtosec_concat_x_no_normalize.m"
+    Input:  
+         - data file including snapshots matrix and the correspoinding mask 
+    Output: 
+         - a set of *.dat files in "test_results" directory
+         - symmetrized distance matrix as "./dataY/dataY_nS*_nN*_sym.mat"
+
+(2) run "ferguson.m"
+    Input: 
+         - symmetrized distances matrix
+    Output:
+         - Ferguson plot
+         - Gaussian Kernel width (sigma value)
+
+(3) run "scriptEmbedding.m"
+    Input: 
+         - symmetrized distance matrix (within "./dataY")
+         - sigma value from step (2)
+         - other embedding parameters (do NOT change nA, nNA, and alpha)
+    Output:
+         - eigenfuncs of diffusion map as "dataPsi_nS*_nN*_nA0_sigma*_nEigs*.mat"
+    *** notice: optimum sigma parameter in "scriptEmbedding.m" is usually 
+        larger than that from "run_Ferguson.m", e.g., 10 times larger. In 
+        general, we take a sigma that the embedding process converges to 
+        meaningful eigenfunctions.       
+
+(4) run "plot_DM.m" 
+    Input:
+         - eigenfunctions and eigenvalues (psi & lambda) in dataPsi*.mat
+    Output:
+         - plot of eigenfunctions and a plot of eigenvalues 
+
+(5) run "run_PYP_femtosec_concat_x_dp_no_normalize.mat"
+    Input:
+         - data file including snapshots matrix 
+    Output:
+         - matrix of squared distances as "X^T X" 
+           *** stored as chunks in a folder named as "dp_N*_n*_c*"
+
+(6) run "run_PYP_femtosec_concat_x_USV.m"
+    Input: 
+         - data file including snapshots matrix
+         - "dataPsi_nS*_nN*_nA0_sigma*_nEigs*.mat" from step (3)
+         - output of step (5)
+         - some other NLSA parameters (see the code)
+    Output:
+         - singular value decomposition (SVD) components:
+           * S: singular values
+           * U: topograms
+           * V: chronograms (projected back onto data space)
+
+(7) run "plot_USV.m"
+    Input:
+         - S, U, V from step (6)
+         - some other embedding and NLSA parameters (see the code)
+    Output:
+         - plots of singular values, topos, and chronos
+
+(8) run "parallel_reconstruct.m"
+    Input:
+         - SVD results from step (6)
+         - some other embedding and NLSA parameters (see the code)
+    Output:
+         - reconstructed diffraction volumes from every mode as split files
+           (saved as "reconstructedData*_of_*.mat" on the cluster)
+
+(9) run "scriptReconstruction.m"
+    Input:
+         - reconstruced data from step (8)
+    Output:
+         - full reconstructed diffraction volumes as a single matrix (each
+           column corresponds to a full volume at a single time point)
+
+******************************* Notice ************************************
+If you would like to use very large nN values, right after step (1) run 
+"make_large_dSq.m" and "do_dataY_symmetrization_with_large_dSq.m" and then 
+go to step (2).
+
+"make_large_dSq.m":
+    Input:
+         - the set of *.dat files in "test_results" directory from step (1)
+    Output:
+         - a set of new *.dat files in "test_results_n*" directory
+
+"do_dataY_symmetrization_with_large_dSq.m":
+    Input: 
+         - the set of new *.dat files in "test_results_n*" directory
+    Output:
+         - symmetrized distances saved as dataY*sym.* in dataY folder
+
