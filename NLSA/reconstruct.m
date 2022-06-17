@@ -31,7 +31,7 @@ function status=reconstruct(param)
       for cc=copyOfInterest
         Xk = Xk+U((cc-1)*D+[1:D],k)*S(k,k)*V(t-concatOrder+cc,k);   
       end
-      X(i1,:,i3) = Xk/concatOrder;              
+      X(i1,:,i3) = Xk/length(copyOfInterest);              
     end
   end
   save(reconstructedData,'X','kOfInterest','tOfInterest','-v7.3');
